@@ -1,0 +1,14 @@
+$fes readADC ADC $arg(UTT) -sr 16 -hm 0 -bm auto -v 0
+
+$fes spectrum FFT0 ADC 25ms
+
+if { [llength [objects FBMatrix matrixMEL]] != 1} {
+   set points [$fes:FFT0 configure -coeffN]
+   set rate   [expr 1000 * [$fes:FFT0 configure -samplingRate]]
+   [FBMatrix matrixMEL] mel -N 40 -p $points -rate $rate
+}
+
+$fes   filterbank      MEL         FFT0      matrixMEL
+$fes   log             lMEL        MEL       1.0 1.0
+$fes   meansub         FEAT        lMEL      -a 2
+
